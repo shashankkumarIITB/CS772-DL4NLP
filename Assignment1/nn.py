@@ -1,7 +1,10 @@
 # ADD THE LIBRARIES YOU'LL NEED
 import csv, re
 from nltk.corpus import stopwords
-from tensorflow.keras import Input, Dense
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import Input, Model
+from tensorflow.keras.layers import Dense, Activation
 
 '''
 About the task:
@@ -15,8 +18,11 @@ Execute your code using the provided auto.py script(NO EDITS PERMITTED) as your 
 # Stopwords = Words that do not add meaning to the sentence
 STOPWORDS = stopwords.words("english")
 
-# Maxlength of the sequence of words
-MAX_LENGTH = 10
+# Maxlength of the sequence of input words
+MAX_INPUT_LENGTH = 10
+
+# MAximum output ratings
+MAX_RATINGS = 5
 
 # Dictionary and index for encoding
 UNKNOWN_TOKEN = 'UKN'
@@ -31,7 +37,9 @@ def get_train_data(train_file):
         reader = csv.DictReader(csvfile, delimiter=',')
         for row in reader:
             train_data.append(row['reviews'])
-            train_ratings.append(row['ratings'])
+            ratings = int(row['ratings'])
+            # Convert output ratings to one-hot encoding 
+            train_ratings.append(list(np.eye(MAX_RATINGS)[ratings-1]))
     return train_data, train_ratings
 
 def get_test_data(test_file):
@@ -67,7 +75,7 @@ def convert_to_lower(text):
 
 def remove_punctuation(text):
     # return the reviews after removing punctuations
-    punctuations = ['.', ',', ';', '"', "'", '?', '!', '-']
+    punctuations = ['.', ',', ';', '"', "'", '?', '!', '-', '~']
     for e in punctuations:
         text = text.replace(e, '')
     return re.sub('\s+', ' ', text)
@@ -83,7 +91,7 @@ def perform_tokenization(text):
 def perform_padding(data):
     # return the reviews after padding the reviews to maximum length
     # input data would be an encoded dictionary
-    return [val for val in data.values()] + [0] * (MAX_LENGTH - len(data))
+    return [val for val in list(data.values())[:MAX_INPUT_LENGTH]] + [0] * (MAX_INPUT_LENGTH - len(data))
 
 def preprocess_data(data):
     # make all the following function calls on your data
@@ -112,32 +120,38 @@ def preprocess_data(data):
 
 def softmax_activation(x):
     # write your own implementation from scratch and return softmax values(using predefined softmax is prohibited)
-    pass
+    x_exp = tf.math.exp(x)
+    x_exp_sum = tf.math.reduce_sum(x_exp, axis=0)
+    return tf.divide(x_exp, x_exp_sum)
 
 class NeuralNet:
 
     def __init__(self, reviews, ratings):
-        self.reviews = reviews
-        self.ratings = ratings
+        self.reviews = np.array(reviews)
+        self.ratings = np.array(ratings)
 
     def build_nn(self):
         #add the input and output layer here; you can use either tensorflow or pytorch
-        X = Input(shape=(MAX_LENGTH, ), name='input')
-        X = Dense
+        X = Input(shape=(MAX_INPUT_LENGTH, ), name='input')
+        Y = Dense(MAX_RATINGS, activation='softmax', name='dense')(X)
+        # Y = Activation(softmax_activation, name='softmax')(Y)
+        self.model = Model(X, Y, name='nn')
 
-    def train_nn(self,batch_size,epochs):
+    def train_nn(self, batch_size, epochs):
         # write the training loop here; you can use either tensorflow or pytorch
         # print validation accuracy
-        pass
+        self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.fit(x=self.reviews, y=self.ratings, batch_size=batch_size, epochs=epochs, verbose=2)
+        # self.model.evaluate(x=self.reviews, y=self.ratings)
 
     def predict(self, reviews):
         # return a list containing all the ratings predicted by the trained model
-        pass
+        return self.model.predict(reviews)
 
 # DO NOT MODIFY MAIN FUNCTION'S PARAMETERS
 def main(train_file, test_file):
     
-    batch_size,epochs=1,1
+    batch_size, epochs = 16, 1
 
     # Read data from the training file and split the input and output
     train_data, train_ratings = get_train_data(train_file)
@@ -146,12 +160,20 @@ def main(train_file, test_file):
     train_reviews=preprocess_data(train_data)
     test_reviews=preprocess_data(test_data)
 
-    # model=NeuralNet(train_reviews,train_ratings)
-    # model.build_nn()
-    # model.train_nn(batch_size,epochs)
+    model=NeuralNet(train_reviews, train_ratings)
+    model.build_nn()
+    model.train_nn(batch_size,epochs)
 
-    # return model.predict(test_reviews)
+    return model.predict(test_reviews)
 
 # Main function to run code from command line
 if __name__ == '__main__':
-    main('train.csv', 'test.csv')
+    predictions = main('train.csv', 'test.csv')
+
+    for prediction in predictions:    
+        print(prediction)
+
+    # Write the predictions to a file
+    # with open('predict.txt', 'w') as file:
+    #     for predict in predictions:
+    #         file.write(predict)
