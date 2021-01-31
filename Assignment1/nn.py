@@ -1,3 +1,7 @@
+# Disable tensorflow logs
+import os, sys
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 # ADD THE LIBRARIES YOU'LL NEED
 import csv, re
 from nltk.corpus import stopwords
@@ -75,7 +79,7 @@ def convert_to_lower(text):
 
 def remove_punctuation(text):
     # return the reviews after removing punctuations
-    punctuations = ['.', ',', ';', '"', "'", '?', '!', '-', '~']
+    punctuations = ['.', ',', ';', '"', "'", '?', '!', '-', '~', ':', '(', ')', '{', '}', '[', ']', '%', '_']
     for e in punctuations:
         text = text.replace(e, '')
     return re.sub('\s+', ' ', text)
@@ -120,8 +124,9 @@ def preprocess_data(data):
 
 def softmax_activation(x):
     # write your own implementation from scratch and return softmax values(using predefined softmax is prohibited)
-    x_exp = tf.math.exp(x)
-    x_exp_sum = tf.math.reduce_sum(x_exp, axis=0)
+    x_max = tf.math.reduce_max(x, axis=1, keepdims=True)
+    x_exp = tf.math.exp(tf.math.subtract(x, x_max))
+    x_exp_sum = tf.math.reduce_sum(x_exp, axis=1, keepdims=True)
     return tf.divide(x_exp, x_exp_sum)
 
 class NeuralNet:
@@ -129,20 +134,38 @@ class NeuralNet:
     def __init__(self, reviews, ratings):
         self.reviews = np.array(reviews)
         self.ratings = np.array(ratings)
+        # Split into training and validation sets
+        fraction_validation = 0.1
+        length_validation = int(len(reviews) * fraction_validation)
+        # Train set
+        self.reviews_train = self.reviews[length_validation:]
+        self.ratings_train = self.ratings[length_validation:]
+        # Validation set
+        self.reviews_validation = self.reviews[:length_validation]
+        self.ratings_validation = self.ratings[:length_validation]
+        # Print insights about the data
+        self.print_insights()
+
+    def print_insights(self):
+        # Print information about the training data available
+        ratings = [np.where(r==1)[0][0] for r in self.ratings]
+        ratings, count = np.unique(ratings, return_counts=True)
+        for r, c in zip(ratings, count):
+            print(f'Ratings: {r+1} => {c}') 
 
     def build_nn(self):
         #add the input and output layer here; you can use either tensorflow or pytorch
         X = Input(shape=(MAX_INPUT_LENGTH, ), name='input')
-        Y = Dense(MAX_RATINGS, activation='softmax', name='dense')(X)
-        # Y = Activation(softmax_activation, name='softmax')(Y)
+        Y = Dense(MAX_RATINGS, name='dense')(X)
+        Y = Activation(softmax_activation, name='softmax')(Y)
         self.model = Model(X, Y, name='nn')
 
     def train_nn(self, batch_size, epochs):
         # write the training loop here; you can use either tensorflow or pytorch
         # print validation accuracy
         self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
-        self.model.fit(x=self.reviews, y=self.ratings, batch_size=batch_size, epochs=epochs, verbose=2)
-        # self.model.evaluate(x=self.reviews, y=self.ratings)
+        self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=batch_size, epochs=epochs, verbose=1)
+        self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
 
     def predict(self, reviews):
         # return a list containing all the ratings predicted by the trained model
@@ -151,7 +174,7 @@ class NeuralNet:
 # DO NOT MODIFY MAIN FUNCTION'S PARAMETERS
 def main(train_file, test_file):
     
-    batch_size, epochs = 16, 1
+    batch_size, epochs = 32, 10
 
     # Read data from the training file and split the input and output
     train_data, train_ratings = get_train_data(train_file)
@@ -168,12 +191,10 @@ def main(train_file, test_file):
 
 # Main function to run code from command line
 if __name__ == '__main__':
-    predictions = main('train.csv', 'test.csv')
-
-    for prediction in predictions:    
-        print(prediction)
+    predictions_softmax = main('train.csv', 'test.csv')
+    predictions = predictions_softmax.argmax(axis=1)
 
     # Write the predictions to a file
-    # with open('predict.txt', 'w') as file:
-    #     for predict in predictions:
-    #         file.write(predict)
+    with open('predict.txt', 'w') as file:
+        for prediction in predictions:
+            file.write(f'{prediction+1}\n')
