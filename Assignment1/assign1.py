@@ -7,8 +7,9 @@ import csv, re
 from nltk.corpus import stopwords
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import Input, Model
-from tensorflow.keras.layers import Dense, Activation
+from tensorflow.keras.layers import Dense, Activation, Embedding, Flatten, InputLayer
+from tensorflow.keras import Sequential
+from tensorflow.keras.metrics import Precision, Recall
 
 '''
 About the task:
@@ -155,17 +156,30 @@ class NeuralNet:
 
     def build_nn(self):
         #add the input and output layer here; you can use either tensorflow or pytorch
-        X = Input(shape=(MAX_INPUT_LENGTH, ), name='input')
-        Y = Dense(MAX_RATINGS, name='dense')(X)
-        Y = Activation(softmax_activation, name='softmax')(Y)
-        self.model = Model(X, Y, name='nn')
+        model = Sequential()
+        model.add(InputLayer(input_shape=(MAX_INPUT_LENGTH, ), name='input'))
+        model.add(Embedding(len(ENCODED_DICT), 64, input_length=MAX_INPUT_LENGTH, name='embedding'))
+        model.add(Flatten(name='flatten'))
+        model.add(Dense(MAX_RATINGS, name='dense'))
+        model.add(Activation(softmax_activation, name='softmax'))
+        print(model.summary())
+        self.model = model
 
     def train_nn(self, batch_size, epochs):
         # write the training loop here; you can use either tensorflow or pytorch
         # print validation accuracy
-        self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
         self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=batch_size, epochs=epochs, verbose=1)
         self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
+        self.evaluations = self.predict(self.reviews_validation)
+        self.writeFile()
+        self.model.save('Assignment1.h5')
+
+    def writeFile(self):
+        # Function to write predicted evaluations to file
+        with open('evaluate.txt', 'w') as file:
+            for prediction in self.evaluations:
+                file.write(f'{prediction.argmax(axis=1) + 1}\n')
 
     def predict(self, reviews):
         # return a list containing all the ratings predicted by the trained model
@@ -174,7 +188,7 @@ class NeuralNet:
 # DO NOT MODIFY MAIN FUNCTION'S PARAMETERS
 def main(train_file, test_file):
     
-    batch_size, epochs = 32, 10
+    batch_size, epochs = 32, 5
 
     # Read data from the training file and split the input and output
     train_data, train_ratings = get_train_data(train_file)
