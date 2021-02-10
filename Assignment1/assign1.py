@@ -9,6 +9,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers import Dense, Activation, Embedding, Flatten, InputLayer
 from tensorflow.keras import Sequential
+from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import Precision, Recall
 
 '''
@@ -168,18 +169,23 @@ class NeuralNet:
     def train_nn(self, batch_size, epochs):
         # write the training loop here; you can use either tensorflow or pytorch
         # print validation accuracy
-        self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
-        self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=batch_size, epochs=epochs, verbose=1)
-        self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
-        self.evaluations = self.predict(self.reviews_validation)
-        self.writeFile()
-        self.model.save('Assignment1.h5')
+        try:
+            if os.path.exists('Assignment1.h5'):
+                self.model = load_model('Assignment1.h5')
+        except:
+            pass
+            self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
+            self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=batch_size, epochs=epochs, verbose=1)
+            self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
+            self.model.save('Assignment1.h5')
+        self.evaluate()
 
-    def writeFile(self):
+    def evaluate(self):
+        predictions = self.predict(self.reviews_validation)
         # Function to write predicted evaluations to file
         with open('evaluate.txt', 'w') as file:
-            for prediction in self.evaluations:
-                file.write(f'{prediction.argmax(axis=1) + 1}\n')
+            for prediction, actual in zip(predictions, self.ratings_validation):
+                file.write(f'{prediction.argmax() + 1}, {actual.argmax() + 1}\n')
 
     def predict(self, reviews):
         # return a list containing all the ratings predicted by the trained model
