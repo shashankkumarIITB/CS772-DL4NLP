@@ -25,7 +25,7 @@ Execute your code using the provided auto.py script(NO EDITS PERMITTED) as your 
 STOPWORDS = stopwords.words("english")
 
 # Maxlength of the sequence of input words
-MAX_INPUT_LENGTH = 10
+MAX_INPUT_LENGTH = 15
 
 # MAximum output ratings
 MAX_RATINGS = 5
@@ -169,15 +169,10 @@ class NeuralNet:
     def train_nn(self, batch_size, epochs):
         # write the training loop here; you can use either tensorflow or pytorch
         # print validation accuracy
-        try:
-            if os.path.exists('Assignment1.h5'):
-                self.model = load_model('Assignment1.h5')
-        except:
-            pass
-            self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
-            self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=batch_size, epochs=epochs, verbose=1)
-            self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
-            self.model.save('Assignment1.h5')
+        self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
+        self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=batch_size, epochs=epochs, verbose=1)
+        self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
+        self.model.save('Assignment1.h5')
         self.evaluate()
 
     def evaluate(self):
@@ -194,7 +189,7 @@ class NeuralNet:
 # DO NOT MODIFY MAIN FUNCTION'S PARAMETERS
 def main(train_file, test_file):
     
-    batch_size, epochs = 32, 5
+    batch_size, epochs = 32, 4
 
     # Read data from the training file and split the input and output
     train_data, train_ratings = get_train_data(train_file)
@@ -207,11 +202,16 @@ def main(train_file, test_file):
     model.build_nn()
     model.train_nn(batch_size,epochs)
 
-    return model.predict(test_reviews)
+    test_data = ["Showed up not how it's shown . Was someone's old toy. with paint on it.",  "It cannot be..", "Showed up not how it's shown . Was someone's old toy. with paint on it. It cannot be.."]
+
+    test_data = preprocess_data(test_data)
+    
+    return model.predict(test_data)
 
 # Main function to run code from command line
 if __name__ == '__main__':
     predictions_softmax = main('train.csv', 'test.csv')
+    print(predictions_softmax)
     predictions = predictions_softmax.argmax(axis=1)
 
     # Write the predictions to a file
