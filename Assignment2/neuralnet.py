@@ -69,7 +69,6 @@ class NeuralNet:
         for r, c in zip(ratings, count):
             print(f'Ratings: {r+1} => {c}') 
 
-
     def write_file(self, filename='validation_output.txt'):
         # Function to write predicted values on the validation set to file
         predictions = self.predict(self.reviews_validation)
