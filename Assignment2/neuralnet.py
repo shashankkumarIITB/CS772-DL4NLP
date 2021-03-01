@@ -52,7 +52,7 @@ class NeuralNet:
         self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
         self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=self.batch_size, epochs=self.epochs, verbose=1)
         self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
-        self.model.save('Assignment2.h5')
+        self.model.save('Assignment2_relu.h5')
     
     def predict(self, reviews):
         # return a list containing all the ratings predicted by the trained model
@@ -60,7 +60,7 @@ class NeuralNet:
 
     def load_nn():
         # function to load the neural network
-        return load_model('Assignment2.h5', custom_objects={'softmax_activation': softmax_activation})
+        return load_model('Assignment2_relu.h5', custom_objects={'softmax_activation': softmax_activation})
 
     def print_insights(self):
         # Print information about the training data available
