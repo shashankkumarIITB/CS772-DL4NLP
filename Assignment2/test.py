@@ -38,9 +38,10 @@ predictions_relu = predictions_softmax_relu.argmax(axis=1) + 1
 # predictions_sigmoid = predictions_softmax_sigmoid.argmax(axis=1) + 1
 
 # test_file = open("test_predict_sigmoid.txt","w+")
+
 # for p in predictions:
-# 	test_file.write(str(p))
-# 	test_file.write('\n')
+#     test_file.write(f'{prediction}\n')
+
 # test_file.close()
 
 test_size = len(predictions_relu)

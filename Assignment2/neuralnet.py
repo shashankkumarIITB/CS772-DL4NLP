@@ -40,7 +40,8 @@ class NeuralNet:
         model.add(Embedding(len(self.word_to_index), 64, input_length=self.max_input_length, name='embedding'))
         model.add(Flatten(name='flatten'))
         model.add(Dense(512, activation='relu', name='hidden_1'))
-        model.add(Dense(128, activation='sigmoid', name='hidden_2'))
+        # model.add(Dense(256, activation='relu', name='hidden_1'))
+        model.add(Dense(256, activation='sigmoid', name='hidden_2'))
         model.add(Dense(self.max_ratings, name='dense'))
         model.add(Activation(softmax_activation, name='softmax'))
         self.model = model

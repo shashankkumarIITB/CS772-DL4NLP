@@ -17,7 +17,7 @@ def main(train_file, test_file, load_model=False):
         return model.predict(test_reviews)
     else:
         # Hyperparameters
-        batch_size, epochs = 8, 3
+        batch_size, epochs = 4, 3
         # Read data from the training file and split the input and output
         train_data, train_ratings = get_train_data(train_file)
         # Preprocess the training reviews
