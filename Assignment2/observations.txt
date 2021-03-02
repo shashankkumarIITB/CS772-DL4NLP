@@ -1,4 +1,4 @@
-Sigmoid activation used - 
+Sigmoid activation used (train) - 
 	Ratings: 1 => 4059
 	Ratings: 2 => 2265
 	Ratings: 3 => 3612
@@ -34,7 +34,7 @@ Sigmoid activation used -
 	157/157 [==============================] - 1s 2ms/step - loss: 0.8227 - accuracy: 0.7106 - precision: 0.8008 - recall: 0.6310
 
 
-ReLU activation used -
+ReLU activation used (train) -
 	Ratings: 1 => 4059
 	Ratings: 2 => 2265
 	Ratings: 3 => 3612
@@ -68,3 +68,19 @@ ReLU activation used -
 	Epoch 3/3
 		45000/45000 [==============================] - 987s 22ms/step - loss: 0.5232 - accuracy: 0.8079 - precision: 0.8717 - recall: 0.7529
 	157/157 [==============================] - 1s 2ms/step - loss: 0.8407 - accuracy: 0.7070 - precision: 0.7878 - recall: 0.6392
+
+
+Sigmoid (test) -
+	Very bad product. I would never recommend this to anyone. Please stop selling fake products. Utter waste of money. => 1
+	This book was very informative, covering all aspects of game. => 1
+	I am already a baseball fan and knew a bit about the Negro leagues, but I learned a lot more reading this book. => 5
+	Solid construction, good fit and finish.  The razor side just fits my razor. => 5
+
+ReLU (test) -
+	Very bad product. I would never recommend this to anyone. Please stop selling fake products. Utter waste of money. => 1
+	This book was very informative, covering all aspects of game. => 1
+	I am already a baseball fan and knew a bit about the Negro leagues, but I learned a lot more reading this book. => 5
+	Solid construction, good fit and finish.  The razor side just fits my razor. => 4
+
+> test accuracy with relu activation = 63.490
+> test accuracy with sigmoid activation = 63.220
