@@ -41,7 +41,7 @@ class NeuralNet:
         model.add(Flatten(name='flatten'))
         model.add(Dense(512, activation='relu', name='hidden_1'))
         # model.add(Dense(256, activation='relu', name='hidden_1'))
-        model.add(Dense(256, activation='sigmoid', name='hidden_2'))
+        model.add(Dense(128, activation='sigmoid', name='hidden_2'))
         model.add(Dense(self.max_ratings, name='dense'))
         model.add(Activation(softmax_activation, name='softmax'))
         self.model = model
@@ -63,13 +63,13 @@ class NeuralNet:
         # function to load the neural network with relu activation used
         return load_model('Assignment2.h5', custom_objects={'softmax_activation': softmax_activation})
 
-    def load_nn_relu():
-        # function to load the neural network with relu activation used
-        return load_model('Assignment2_relu.h5', custom_objects={'softmax_activation': softmax_activation})
+    # def load_nn_relu():
+    #     # function to load the neural network with relu activation used
+    #     return load_model('Assignment2_relu.h5', custom_objects={'softmax_activation': softmax_activation})
 
-    def load_nn_sigmoid():
-        # function to load the neural network with sigmoid activation used
-        return load_model('Assignment2_sigmoid.h5', custom_objects={'softmax_activation': softmax_activation})
+    # def load_nn_sigmoid():
+    #     # function to load the neural network with sigmoid activation used
+    #     return load_model('Assignment2_sigmoid.h5', custom_objects={'softmax_activation': softmax_activation})
 
     def print_insights(self):
         # Print information about the training data available
