@@ -35,6 +35,17 @@ def get_test_data(test_file):
             test_data.append(row['reviews'])
     return test_data
 
+def get_test_ratings(test_file):
+    # Return test reviews given test file
+    test_ratings = []
+    with open(test_file) as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=',')
+        for row in reader:
+            ratings = int(row['ratings'])
+            # Convert output ratings to one-hot encoding 
+            test_ratings.append(list(np.eye(5)[ratings-1]))
+    return test_ratings
+
 def convert_to_lower(text):
     # return the reviews after convering then to lowercase
     return text.lower()
