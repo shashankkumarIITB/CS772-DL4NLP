@@ -36,7 +36,7 @@ def get_test_data(test_file):
     return test_data
 
 def get_test_ratings(test_file):
-    # Return test reviews given test file
+    # Return test ratings given test file
     test_ratings = []
     with open(test_file) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=',')
