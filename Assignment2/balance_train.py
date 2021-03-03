@@ -11,12 +11,15 @@ with open("train.csv","r") as file:
 		rating = int(row['ratings'])
 		reviews[rating-1].append(review)
 
-five_reviews = reviews[4] # reviews with rating 5
-reviews.pop()
+# five_reviews = reviews[4] # reviews with rating 5
+# reviews.pop()
 
-n = int((len(reviews[0])+len(reviews[1])+len(reviews[2])+len(reviews[3]))/4) # 4201
-l = random.sample(five_reviews,n)
-reviews.append(l)
+for i in range(4):
+	reviews[i] = reviews[i]*6
+
+# n = int((len(reviews[0])+len(reviews[1])+len(reviews[2])+len(reviews[3]))/4) # 4201
+# l = random.sample(five_reviews,n)
+# reviews.append(l)
 
 mid_reviews = []
 for i in range(5):
