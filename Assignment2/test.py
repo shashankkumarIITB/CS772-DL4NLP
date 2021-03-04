@@ -43,7 +43,7 @@ for i in range(test_size):
 
 acc = match_count*100/test_size
 
-print('> test accuracy with relu+sigmoid activation = %.3f' % (acc))
+print('> test accuracy = %.3f' % (acc))
 
 # print the results
 # for review, prediction in zip(reviews, predictions):
