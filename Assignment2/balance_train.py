@@ -15,7 +15,10 @@ with open("train.csv","r") as file:
 # reviews.pop()
 
 for i in range(4):
-	reviews[i] = reviews[i]*6
+	factor = int(len(reviews[4])/len(reviews[i]))
+	if factor==1:
+		factor += 2
+	reviews[i] = reviews[i]*factor
 
 # n = int((len(reviews[0])+len(reviews[1])+len(reviews[2])+len(reviews[3]))/4) # 4201
 # l = random.sample(five_reviews,n)
