@@ -1,8 +1,8 @@
 from sklearn.model_selection import train_test_split
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.layers import Dense, Activation, Embedding, Flatten, InputLayer
 from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense, Activation, Embedding, Flatten, InputLayer, LSTM
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import Precision, Recall
 
@@ -38,10 +38,11 @@ class NeuralNet:
         model = Sequential()
         model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
         model.add(Embedding(len(self.word_to_index), 64, input_length=self.max_input_length, name='embedding'))
-        model.add(Flatten(name='flatten'))
-        model.add(Dense(512, activation='relu', name='hidden_1'))
-        model.add(Dense(256, activation='sigmoid', name='hidden_2'))
-        model.add(Dense(128, activation='sigmoid', name='hidden_3'))
+        # model.add(Flatten(name='flatten'))
+        model.add(LSTM(512, activation='sigmoid', dropout=0.1, name="lstm"))
+        # model.add(Dense(512, activation='relu', name='hidden_1'))
+        model.add(Dense(256, activation='relu', name='hidden_1'))
+        model.add(Dense(128, activation='relu', name='hidden_2'))
         model.add(Dense(self.max_ratings, name='dense'))
         model.add(Activation(softmax_activation, name='softmax'))
         self.model = model
