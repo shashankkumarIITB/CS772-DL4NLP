@@ -1,3 +1,4 @@
+from preprocess import EMBEDDING_DIM, INDEX
 from sklearn.model_selection import train_test_split
 import numpy as np
 import tensorflow as tf
@@ -5,6 +6,21 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Activation, Embedding, Flatten, InputLayer, LSTM
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import Precision, Recall
+from tensorflow.keras.initializers import Constant
+import os
+import gensim
+
+EMBEDDING_MATRIX=np.zeros((INDEX,EMBEDDING_DIM))
+
+def get_my_embeddings():
+    model = gensim.models.KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary=True)  
+    for word,i in WORD_TO_INDEX.items():
+        if i>INDEX:
+            continue
+        try:
+            EMBEDDING_MATRIX[i]=model[word]
+        except KeyError:
+            pass
 
 def softmax_activation(x):
     # write your own implementation from scratch and return softmax values (using predefined softmax is prohibited)
@@ -36,8 +52,10 @@ class NeuralNet:
     def build_nn(self):
         #add the input and output layer here; you can use either tensorflow or pytorch
         model = Sequential()
-        model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
-        model.add(Embedding(len(self.word_to_index), 64, input_length=self.max_input_length, name='embedding'))
+        # model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
+        embedding_layer=Embedding(len(self.word_to_index),EMBEDDING_DIM,embeddings_initializer=Constant(EMBEDDING_MATRIX),input_length=self.max_input_length,trainable=False)
+        model.add(embedding_layer)
+        # model.add(Embedding(len(self.word_to_index), 64, input_length=self.max_input_length, name='embedding'))
         # model.add(Flatten(name='flatten'))
         model.add(LSTM(512, activation='sigmoid', dropout=0.01, name="lstm"))
         # model.add(Dense(512, activation='relu', name='hidden_1'))

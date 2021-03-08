@@ -12,6 +12,7 @@ MAX_RATINGS = 5
 UNKNOWN_TOKEN = 'UKN'
 WORD_TO_INDEX = {UNKNOWN_TOKEN: 0}
 INDEX = 1
+EMBEDDING_DIM=300
 
 def get_train_data(train_file, max_ratings=MAX_RATINGS):
     # Split training reviews and ratings from the train file
