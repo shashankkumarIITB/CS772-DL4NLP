@@ -44,4 +44,4 @@ fields = ['', 'reviews', 'ratings']
 with open("train_balanced.csv","w+") as file:
 	write = csv.writer(file)
 	write.writerow(fields)
-	write.writerows(final_reviews) 
+	write.writerows(final_reviews)

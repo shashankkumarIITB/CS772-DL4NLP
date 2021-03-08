@@ -193,7 +193,7 @@ ReLU (test) -
 	> test accuracy with relu+sigmoid activation = 63.680
 
 
-after class 5 balance - 
+after class 5 balance (first)- 
 	Ratings: 1 => 4059
 	Ratings: 2 => 2265
 	Ratings: 3 => 3612
@@ -228,4 +228,42 @@ after class 5 balance -
 	18907/18907 [==============================] - 237s 13ms/step - loss: 0.5683 - accuracy: 0.7862 - precision: 0.8327 - recall: 0.7484
 	66/66 [==============================] - 0s 2ms/step - loss: 1.4389 - accuracy: 0.5031 - precision: 0.5405 - recall: 0.4417
 
-	> test accuracy with relu+sigmoid activation = 46.810
+	> test accuracy = 46.810
+
+
+after class 5 balance (second)- 
+	Ratings: 1 => 32472
+	Ratings: 2 => 31710
+	Ratings: 3 => 32508
+	Ratings: 4 => 27484
+	Ratings: 5 => 33193
+	Model: "sequential"
+	_________________________________________________________________
+	Layer (type)                 Output Shape              Param #
+	=================================================================
+	embedding (Embedding)        (None, 15, 64)            1387072
+	_________________________________________________________________
+	lstm (LSTM)                  (None, 512)               1181696
+	_________________________________________________________________
+	hidden_1 (Dense)             (None, 256)               131328
+	_________________________________________________________________
+	hidden_2 (Dense)             (None, 128)               32896
+	_________________________________________________________________
+	dense (Dense)                (None, 5)                 645
+	_________________________________________________________________
+	softmax (Activation)         (None, 5)                 0
+	=================================================================
+	Total params: 2,733,637
+	Trainable params: 2,733,637
+	Non-trainable params: 0
+	_________________________________________________________________
+	None
+	Epoch 1/3
+	277/277 [==============================] - 132s 468ms/step - loss: 1.6124 - accuracy: 0.2105 - precision: 0.0731 - recall: 9.9411e-04
+	Epoch 2/3
+	277/277 [==============================] - 136s 491ms/step - loss: 1.1558 - accuracy: 0.4903 - precision: 0.6376 - recall: 0.2328
+	Epoch 3/3
+	277/277 [==============================] - 130s 469ms/step - loss: 0.9318 - accuracy: 0.6365 - precision: 0.7044 - recall: 0.5255
+	492/492 [==============================] - 15s 30ms/step - loss: 0.8536 - accuracy: 0.6877 - precision: 0.7394 - recall: 0.6130
+
+	> test accuracy = 50.300
