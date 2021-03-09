@@ -4,7 +4,7 @@ reviews = []
 for i in range(5):
 	reviews.append([])
 
-with open("train.csv","r") as file:
+with open("data/train.csv","r") as file:
 	reader = csv.DictReader(file, delimiter=',')
 	for row in reader:
 		review = str(row['reviews'])
@@ -41,7 +41,7 @@ for i in final_reviews:
 
 fields = ['', 'reviews', 'ratings']
 
-with open("train_balanced.csv","w+") as file:
+with open("data/train_balanced.csv","w+") as file:
 	write = csv.writer(file)
 	write.writerow(fields)
 	write.writerows(final_reviews)

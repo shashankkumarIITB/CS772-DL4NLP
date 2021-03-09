@@ -41,7 +41,7 @@ for i in range(test_size):
 	if t[p-1]==1.0:
 		match_count += 1
 
-acc = match_count*100/test_size
+acc = match_count*100.0/test_size
 
 print('> test accuracy = %.3f' % (acc))
 
