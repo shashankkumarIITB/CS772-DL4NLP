@@ -3,7 +3,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # ADD THE LIBRARIES YOU'LL NEED
-from neuralnet import NeuralNet
+from neuralnet import NeuralNet, get_my_embeddings
 from preprocess import WORD_TO_INDEX, preprocess_data, get_train_data, get_test_data
 
 # DO NOT MODIFY MAIN FUNCTION'S PARAMETERS
@@ -11,6 +11,7 @@ def main(train_file, test_file, load_model=False):
     # get the test data and preprocess it
     test_data = get_test_data(test_file)
     test_reviews = preprocess_data(test_data)
+    get_my_embeddings()
     if load_model:
         # load the pretrained model
         model = NeuralNet.load_nn()

@@ -1,4 +1,4 @@
-from preprocess import EMBEDDING_DIM, INDEX
+from preprocess import EMBEDDING_DIM, INDEX, WORD_TO_INDEX
 from sklearn.model_selection import train_test_split
 import numpy as np
 import tensorflow as tf
