@@ -1,4 +1,3 @@
-from preprocess import WORD2VEC_EMBEDDINGS_MATRIX
 from sklearn.model_selection import train_test_split
 import numpy as np
 import tensorflow as tf
@@ -8,7 +7,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import Precision, Recall
 from tensorflow.keras.initializers import Constant
 
-from preprocess import EMBEDDING_DIM, WORD2VEC_EMBEDDINGS
+from preprocess import EMBEDDING_DIM, EMBEDDING_MATRIX
 
 def softmax_activation(x):
     # write your own implementation from scratch and return softmax values (using predefined softmax is prohibited)
@@ -19,7 +18,7 @@ def softmax_activation(x):
 
 class NeuralNet:
     # Class for defining the neural network architecture
-    def __init__(self, reviews, ratings, word_to_index, max_input_length=15, max_ratings=5, split_size=0.1, epochs=4, batch_size=32):
+    def __init__(self, reviews, ratings, vocab_size, max_input_length=15, max_ratings=5, split_size=0.1, epochs=4, batch_size=32):
         # Maximum length of input sequences
         self.max_input_length = max_input_length
         # Maximum ratings for a review
@@ -27,8 +26,8 @@ class NeuralNet:
         # Hyperparameters
         self.epochs = epochs
         self.batch_size = batch_size
-        # Mapping between words and index
-        self.word_to_index = word_to_index
+        # Length of the vocabulary
+        self.vocab_size = vocab_size
         # Split dataset into training and validation sets
         self.reviews_train, self.reviews_validation, self.ratings_train, self.ratings_validation = train_test_split(reviews, ratings, test_size=split_size)
         # Print insights about the data
@@ -36,9 +35,12 @@ class NeuralNet:
 
     def build_nn(self):
         #add the input and output layer here; you can use either tensorflow or pytorch
+        print('Building the model')
+        print(self.vocab_size)
+        print(EMBEDDING_MATRIX.shape)
         model = Sequential()
         model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
-        model.add(Embedding(len(self.word_to_index), EMBEDDING_DIM, embeddings_initializer=Constant(WORD2VEC_EMBEDDINGS_MATRIX), input_length=self.max_input_length, trainable=False, name='embedding'))
+        model.add(Embedding(self.vocab_size, EMBEDDING_DIM, embeddings_initializer=Constant(EMBEDDING_MATRIX), input_length=self.max_input_length, trainable=False, name='embedding'))
         model.add(Flatten(name='flatten'))
         for i, neurons in enumerate([512, 256, 128, 64]):
             model.add(Dense(neurons, activation='relu', name=f'hidden_{i}'))
@@ -76,7 +78,7 @@ class NeuralNet:
         for r, c in zip(ratings, count):
             print(f'Ratings: {r+1} => {c}') 
 
-    def write_file(self, filename='validation_output.txt'):
+    def write_file(self, filename='output/validation_output.txt'):
         # Function to write predicted values on the validation set to file
         predictions = self.predict(self.reviews_validation)
         with open(filename, 'w') as file:

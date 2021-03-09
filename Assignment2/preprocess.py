@@ -12,21 +12,11 @@ MAX_RATINGS = 5
 # Dictionary and index for encoding
 UNKNOWN_TOKEN = 'UKN'
 WORD_TO_INDEX = {UNKNOWN_TOKEN: 0}
-INDEX = 1
-# Embeddings
+VOCAB_SIZE = 1
+# Embeddings to be used
 EMBEDDING_DIM = 300
-WORD2VEC_EMBEDDINGS_MATRIX=None
-WORD2VEC_EMBEDDINGS = gensim.models.KeyedVectors.load_word2vec_format('embeddings/GoogleNews-vectors-negative300.bin', binary=True)
-
-def get_embedding_matrix(vocab_size,vocab):
-    # Word2Vec embeddings
-    global WORD2VEC_EMBEDDINGS_MATRIX
-    WORD2VEC_EMBEDDINGS_MATRIX= np.zeros((vocab_size,EMBEDDING_DIM))
-    for word,i in vocab.items():
-        try:
-            WORD2VEC_EMBEDDINGS_MATRIX[i]=WORD2VEC_EMBEDDINGS[word]
-        except KeyError:
-            pass
+EMBEDDING_MATRIX = np.array([np.zeros((EMBEDDING_DIM,))])
+WORD2VEC_EMBEDDING = gensim.models.KeyedVectors.load_word2vec_format('embeddings/GoogleNews-vectors-negative300.bin', binary=True)
 
 def get_train_data(train_file, max_ratings=MAX_RATINGS):
     # Split training reviews and ratings from the train file
@@ -67,10 +57,10 @@ def convert_to_lower(text):
 
 def remove_punctuation(text):
     # return the reviews after removing punctuations
-    punctuations = ['.', ',', ';', '"', "'", '?', '!', '-', '~', ':', '(', ')', '{', '}', '[', ']', '%', '_']
+    punctuations = ['.', ',', ';', '"', "'", '?', '!', '-', '~', ':', '(', ')', '{', '}', '[', ']', '%', '_', '$', '#', '&', '^', '@']
     for e in punctuations:
-        text = text.replace(e, '')
-    return re.sub('\s+', ' ', text)
+        text = text.replace(e, ' ')
+    return re.sub('[0-9\s]+', ' ', text)
 
 def remove_stopwords(text):
     # return the reviews after removing the stopwords
@@ -83,30 +73,27 @@ def perform_tokenization(text):
 def encode_data(text):
     # This function will be used to encode the reviews using a dictionary(created using corpus vocabulary) 
     # return encoded examples
-    global WORD_TO_INDEX, INDEX
+    global WORD_TO_INDEX, EMBEDDING_MATRIX, VOCAB_SIZE
     encoding = {}
     for word in text:
         if word not in WORD_TO_INDEX:
             # Add the word to the dictionary
-            WORD_TO_INDEX[word] = INDEX
-            INDEX += 1
+            WORD_TO_INDEX[word] = VOCAB_SIZE
+            # Add the embeddings for the word
+            try:
+                EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, np.reshape(WORD2VEC_EMBEDDING[word], (1, -1)))
+                print(EMBEDDING_MATRIX.shape)
+                assert False
+            except KeyError:
+                EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, EMBEDDING_MATRIX[0])
+            VOCAB_SIZE += 1
         encoding[word] = WORD_TO_INDEX[word]
     return encoding
 
-def get_word2vec_embeddings(data):
-    # Word2Vec embeddings
-    embeddings = []
-    for word in list(data.keys()):
-        try:
-            embeddings.append(WORD2VEC_EMBEDDINGS[word])
-        except KeyError:
-            pass
-    return embeddings
-
 def perform_padding(data, max_input_length=MAX_INPUT_LENGTH):
     # return the reviews after padding the reviews to maximum length
-    # input data would be a list of embeddings
-    return [val for val in data[:max_input_length]] + [np.zeros((EMBEDDING_DIM,))] * (max_input_length - len(data))
+    # input data would be a dict of encoded review
+    return [val for val in list(data.values())[:max_input_length]] + [0] * (max_input_length - len(data))
 
 def preprocess_data(data, max_input_length=MAX_INPUT_LENGTH):
     # make all the following function calls on your data
@@ -119,8 +106,6 @@ def preprocess_data(data, max_input_length=MAX_INPUT_LENGTH):
         review = remove_stopwords(review)
         review = perform_tokenization(review)
         review = encode_data(review)
-        review = get_word2vec_embeddings(review)
-        get_embedding_matrix(INDEX,WORD_TO_INDEX)
         review = perform_padding(review, max_input_length)
         processed_data.append(review)
-    return processed_data    
+    return processed_data

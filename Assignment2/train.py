@@ -2,29 +2,27 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-# ADD THE LIBRARIES YOU'LL NEED
 from neuralnet import NeuralNet
-from preprocess import WORD_TO_INDEX, preprocess_data, get_word2vec_embeddings, get_train_data, get_test_data
+from preprocess import WORD_TO_INDEX, preprocess_data, get_train_data, get_test_data
 
-# DO NOT MODIFY MAIN FUNCTION'S PARAMETERS
 def main(train_file, test_file, load_model=False):
     # get the test data and preprocess it
     test_data = get_test_data(test_file)
     test_reviews = preprocess_data(test_data)
-    # get_word2vec_embeddings()
     if load_model:
         # load the pretrained model
         model = NeuralNet.load_nn()
         return model.predict(test_reviews)
     else:
         # Hyperparameters
-        batch_size, epochs = 512, 3
+        batch_size, epochs = 32, 3
         # Read data from the training file and split the input and output
         train_data, train_ratings = get_train_data(train_file)
         # Preprocess the training reviews
         train_reviews = preprocess_data(train_data)
         # build the model and train it
-        nn = NeuralNet(train_reviews, train_ratings, WORD_TO_INDEX, epochs=epochs, batch_size=batch_size)
+        vocab_size = len(WORD_TO_INDEX)
+        nn = NeuralNet(train_reviews, train_ratings, vocab_size, epochs=epochs, batch_size=batch_size)
         nn.build_nn()
         nn.train_nn()
         # predict on test reviews
@@ -36,6 +34,6 @@ if __name__ == '__main__':
     predictions = predictions_softmax.argmax(axis=1) + 1
 
     # Write the predictions to a file
-    with open('data/predict.txt', 'w') as file:
+    with open('output/predict.txt', 'w') as file:
         for prediction in predictions:
             file.write(f'{prediction}\n')

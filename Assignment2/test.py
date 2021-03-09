@@ -14,8 +14,8 @@ from preprocess import preprocess_data, get_test_data, get_test_ratings
 #     "Solid construction, good fit and finish.  The razor side just fits my razor.",
 # ]
 
-test_data = get_test_data('gold_test.csv')
-test_ratings = get_test_ratings('gold_test.csv')
+test_data = get_test_data('data/gold_test.csv')
+test_ratings = get_test_ratings('data/gold_test.csv')
 
 # load the saved model
 nn = NeuralNet.load_nn()
