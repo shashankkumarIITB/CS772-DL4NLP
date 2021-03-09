@@ -1,4 +1,3 @@
-from gensim.models.keyedvectors import WordEmbeddingSimilarityIndex
 from sklearn.model_selection import train_test_split
 import numpy as np
 import tensorflow as tf
@@ -37,10 +36,8 @@ class NeuralNet:
     def build_nn(self):
         #add the input and output layer here; you can use either tensorflow or pytorch
         model = Sequential()
-        model.add(InputLayer(input_shape=(self.max_input_length, EMBEDDING_DIM), name='input'))
-        # embedding_layer=Embedding(len(self.word_to_index), EMBEDDING_DIM, embeddings_initializer=Constant(WORD2VEC_EMBEDDINGS), input_length=self.max_input_length, trainable=False)
-        # model.add(embedding_layer)
-        # model.add(Embedding(len(self.word_to_index), 64, input_length=self.max_input_length, name='embedding'))
+        model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
+        model.add(Embedding(len(self.word_to_index), EMBEDDING_DIM, embeddings_initializer=Constant(WORD2VEC_EMBEDDINGS), input_length=self.max_input_length, trainable=False, name='embedding'))
         model.add(Flatten(name='flatten'))
         for i, neurons in enumerate([512, 256, 128, 64]):
             model.add(Dense(neurons, activation='relu', name=f'hidden_{i}'))
@@ -50,8 +47,6 @@ class NeuralNet:
         print(model.summary())
 
     def train_nn(self):
-        # write the training loop here; you can use either tensorflow or pytorch
-        # print validation accuracy
         self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
         self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=self.batch_size, epochs=self.epochs, verbose=1)
         self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
