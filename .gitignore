@@ -130,3 +130,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+Assignment2/embeddings/7/meta.json
+Assignment2/embeddings/7/model.bin
+Assignment2/embeddings/7/model.txt
+Assignment2/embeddings/7/README
+Assignment2/embeddings/GloVe-1.2.zip
+Assignment2/embeddings/GoogleNews-vectors-negative300.bin
