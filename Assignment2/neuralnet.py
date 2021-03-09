@@ -1,26 +1,14 @@
-from preprocess import EMBEDDING_DIM, INDEX, WORD_TO_INDEX
+from gensim.models.keyedvectors import WordEmbeddingSimilarityIndex
 from sklearn.model_selection import train_test_split
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, Activation, Embedding, Flatten, InputLayer, LSTM
+from tensorflow.keras.layers import Flatten, Dense, Activation, Embedding, InputLayer
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import Precision, Recall
 from tensorflow.keras.initializers import Constant
-import os
-import gensim
 
-EMBEDDING_MATRIX=np.zeros((INDEX,EMBEDDING_DIM))
-
-def get_my_embeddings():
-    model = gensim.models.KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary=True)  
-    for word,i in WORD_TO_INDEX.items():
-        if i>INDEX:
-            continue
-        try:
-            EMBEDDING_MATRIX[i]=model[word]
-        except KeyError:
-            pass
+from preprocess import EMBEDDING_DIM, WORD2VEC_EMBEDDINGS
 
 def softmax_activation(x):
     # write your own implementation from scratch and return softmax values (using predefined softmax is prohibited)
@@ -41,26 +29,21 @@ class NeuralNet:
         self.batch_size = batch_size
         # Mapping between words and index
         self.word_to_index = word_to_index
-        # Dataset
-        self.reviews = np.array(reviews)
-        self.ratings = np.array(ratings)
-        # Split into training and validation sets
+        # Split dataset into training and validation sets
         self.reviews_train, self.reviews_validation, self.ratings_train, self.ratings_validation = train_test_split(reviews, ratings, test_size=split_size)
         # Print insights about the data
-        self.print_insights()
+        self.print_insights(ratings)
 
     def build_nn(self):
         #add the input and output layer here; you can use either tensorflow or pytorch
         model = Sequential()
-        # model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
-        embedding_layer=Embedding(len(self.word_to_index),EMBEDDING_DIM,embeddings_initializer=Constant(EMBEDDING_MATRIX),input_length=self.max_input_length,trainable=False)
-        model.add(embedding_layer)
+        model.add(InputLayer(input_shape=(self.max_input_length, EMBEDDING_DIM), name='input'))
+        # embedding_layer=Embedding(len(self.word_to_index), EMBEDDING_DIM, embeddings_initializer=Constant(WORD2VEC_EMBEDDINGS), input_length=self.max_input_length, trainable=False)
+        # model.add(embedding_layer)
         # model.add(Embedding(len(self.word_to_index), 64, input_length=self.max_input_length, name='embedding'))
-        # model.add(Flatten(name='flatten'))
-        model.add(LSTM(512, activation='sigmoid', dropout=0.01, name="lstm"))
-        # model.add(Dense(512, activation='relu', name='hidden_1'))
-        model.add(Dense(256, activation='relu', name='hidden_1'))
-        model.add(Dense(128, activation='relu', name='hidden_2'))
+        model.add(Flatten(name='flatten'))
+        for i, neurons in enumerate([512, 256, 128, 64]):
+            model.add(Dense(neurons, activation='relu', name=f'hidden_{i}'))
         model.add(Dense(self.max_ratings, name='dense'))
         model.add(Activation(softmax_activation, name='softmax'))
         self.model = model
@@ -72,7 +55,7 @@ class NeuralNet:
         self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
         self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=self.batch_size, epochs=self.epochs, verbose=1)
         self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
-        self.model.save('Assignment2.h5')
+        self.model.save('models/Assignment2.h5')
     
     def predict(self, reviews):
         # return a list containing all the ratings predicted by the trained model
@@ -80,19 +63,19 @@ class NeuralNet:
 
     def load_nn():
         # function to load the neural network with relu activation used
-        return load_model('Assignment2.h5', custom_objects={'softmax_activation': softmax_activation})
+        return load_model('models/Assignment2.h5', custom_objects={'softmax_activation': softmax_activation})
 
     # def load_nn_relu():
     #     # function to load the neural network with relu activation used
-    #     return load_model('Assignment2_relu.h5', custom_objects={'softmax_activation': softmax_activation})
+    #     return load_model('models/Assignment2_relu.h5', custom_objects={'softmax_activation': softmax_activation})
 
     # def load_nn_sigmoid():
     #     # function to load the neural network with sigmoid activation used
-    #     return load_model('Assignment2_sigmoid.h5', custom_objects={'softmax_activation': softmax_activation})
+    #     return load_model('models/Assignment2_sigmoid.h5', custom_objects={'softmax_activation': softmax_activation})
 
-    def print_insights(self):
+    def print_insights(self, ratings):
         # Print information about the training data available
-        ratings = [np.where(r==1)[0][0] for r in self.ratings]
+        ratings = [np.where(r==1)[0][0] for r in np.array(ratings)]
         ratings, count = np.unique(ratings, return_counts=True)
         for r, c in zip(ratings, count):
             print(f'Ratings: {r+1} => {c}') 

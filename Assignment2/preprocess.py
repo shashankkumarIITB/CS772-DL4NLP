@@ -1,6 +1,7 @@
 import csv, re
 from nltk.corpus import stopwords
 import numpy as np
+import gensim
 
 # Stopwords = Words that do not add meaning to the sentence
 STOPWORDS = stopwords.words("english")
@@ -12,7 +13,9 @@ MAX_RATINGS = 5
 UNKNOWN_TOKEN = 'UKN'
 WORD_TO_INDEX = {UNKNOWN_TOKEN: 0}
 INDEX = 1
-EMBEDDING_DIM=300
+# Embeddings
+EMBEDDING_DIM = 300
+WORD2VEC_EMBEDDINGS = gensim.models.KeyedVectors.load_word2vec_format('embeddings/GoogleNews-vectors-negative300.bin', binary=True)
 
 def get_train_data(train_file, max_ratings=MAX_RATINGS):
     # Split training reviews and ratings from the train file
@@ -68,11 +71,6 @@ def perform_tokenization(text):
 
 def encode_data(text):
     # This function will be used to encode the reviews using a dictionary(created using corpus vocabulary) 
-    
-    # Example of encoding :"The food was fabulous but pricey" has a vocabulary of 4 words, each one has to be mapped to an integer like: 
-    # {'The':1,'food':2,'was':3 'fabulous':4 'but':5 'pricey':6} this vocabulary has to be created for the entire corpus and then be used to 
-    # encode the words into integers 
-
     # return encoded examples
     global WORD_TO_INDEX, INDEX
     encoding = {}
@@ -84,10 +82,20 @@ def encode_data(text):
         encoding[word] = WORD_TO_INDEX[word]
     return encoding
 
+def get_word2vec_embeddings(data):
+    # Word2Vec embeddings
+    embeddings = []
+    for word in list(data.keys()):
+        try:
+            embeddings.append(WORD2VEC_EMBEDDINGS[word])
+        except KeyError:
+            pass
+    return embeddings
+
 def perform_padding(data, max_input_length=MAX_INPUT_LENGTH):
     # return the reviews after padding the reviews to maximum length
-    # input data would be an encoded dictionary
-    return [val for val in list(data.values())[:max_input_length]] + [0] * (max_input_length - len(data))
+    # input data would be a list of embeddings
+    return [val for val in data[:max_input_length]] + [np.zeros((EMBEDDING_DIM,))] * (max_input_length - len(data))
 
 def preprocess_data(data, max_input_length=MAX_INPUT_LENGTH):
     # make all the following function calls on your data
@@ -100,6 +108,7 @@ def preprocess_data(data, max_input_length=MAX_INPUT_LENGTH):
         review = remove_stopwords(review)
         review = perform_tokenization(review)
         review = encode_data(review)
+        review = get_word2vec_embeddings(review)
         review = perform_padding(review, max_input_length)
         processed_data.append(review)
     return processed_data    
