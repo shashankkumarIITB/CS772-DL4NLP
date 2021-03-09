@@ -1,3 +1,4 @@
+from preprocess import WORD2VEC_EMBEDDINGS_MATRIX
 from sklearn.model_selection import train_test_split
 import numpy as np
 import tensorflow as tf
@@ -37,7 +38,7 @@ class NeuralNet:
         #add the input and output layer here; you can use either tensorflow or pytorch
         model = Sequential()
         model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
-        model.add(Embedding(len(self.word_to_index), EMBEDDING_DIM, embeddings_initializer=Constant(WORD2VEC_EMBEDDINGS), input_length=self.max_input_length, trainable=False, name='embedding'))
+        model.add(Embedding(len(self.word_to_index), EMBEDDING_DIM, embeddings_initializer=Constant(WORD2VEC_EMBEDDINGS_MATRIX), input_length=self.max_input_length, trainable=False, name='embedding'))
         model.add(Flatten(name='flatten'))
         for i, neurons in enumerate([512, 256, 128, 64]):
             model.add(Dense(neurons, activation='relu', name=f'hidden_{i}'))

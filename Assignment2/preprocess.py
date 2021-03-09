@@ -15,7 +15,18 @@ WORD_TO_INDEX = {UNKNOWN_TOKEN: 0}
 INDEX = 1
 # Embeddings
 EMBEDDING_DIM = 300
+WORD2VEC_EMBEDDINGS_MATRIX=None
 WORD2VEC_EMBEDDINGS = gensim.models.KeyedVectors.load_word2vec_format('embeddings/GoogleNews-vectors-negative300.bin', binary=True)
+
+def get_embedding_matrix(vocab_size,vocab):
+    # Word2Vec embeddings
+    global WORD2VEC_EMBEDDINGS_MATRIX
+    WORD2VEC_EMBEDDINGS_MATRIX= np.zeros((vocab_size,EMBEDDING_DIM))
+    for word,i in vocab.items():
+        try:
+            WORD2VEC_EMBEDDINGS_MATRIX[i]=WORD2VEC_EMBEDDINGS[word]
+        except KeyError:
+            pass
 
 def get_train_data(train_file, max_ratings=MAX_RATINGS):
     # Split training reviews and ratings from the train file
@@ -109,6 +120,7 @@ def preprocess_data(data, max_input_length=MAX_INPUT_LENGTH):
         review = perform_tokenization(review)
         review = encode_data(review)
         review = get_word2vec_embeddings(review)
+        get_embedding_matrix(INDEX,WORD_TO_INDEX)
         review = perform_padding(review, max_input_length)
         processed_data.append(review)
     return processed_data    
