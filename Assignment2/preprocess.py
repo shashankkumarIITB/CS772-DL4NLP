@@ -1,10 +1,9 @@
 import csv, re
-from nltk.corpus import stopwords
 import numpy as np
+from nltk.corpus import stopwords
 import gensim
+import numpy as np
 
-# Stopwords = Words that do not add meaning to the sentence
-STOPWORDS = stopwords.words("english")
 # Maxlength of the sequence of input words
 MAX_INPUT_LENGTH = 15
 # Maximum output ratings
@@ -12,11 +11,12 @@ MAX_RATINGS = 5
 # Dictionary and index for encoding
 UNKNOWN_TOKEN = 'UKN'
 WORD_TO_INDEX = {UNKNOWN_TOKEN: 0}
-VOCAB_SIZE = 1
 # Embeddings to be used
 EMBEDDING_DIM = 300
 EMBEDDING_MATRIX = np.array([np.zeros((EMBEDDING_DIM,))])
 WORD2VEC_EMBEDDING = gensim.models.KeyedVectors.load_word2vec_format('embeddings/GoogleNews-vectors-negative300.bin', binary=True)
+# Stopwords = Words that do not add meaning to the sentence
+STOPWORDS = stopwords.words("english")
 
 def get_train_data(train_file, max_ratings=MAX_RATINGS):
     # Split training reviews and ratings from the train file
@@ -73,20 +73,19 @@ def perform_tokenization(text):
 def encode_data(text):
     # This function will be used to encode the reviews using a dictionary(created using corpus vocabulary) 
     # return encoded examples
-    global WORD_TO_INDEX, EMBEDDING_MATRIX, VOCAB_SIZE
+    global WORD_TO_INDEX, EMBEDDING_MATRIX
+    vocab_size = len(WORD_TO_INDEX)
     encoding = {}
     for word in text:
         if word not in WORD_TO_INDEX:
             # Add the word to the dictionary
-            WORD_TO_INDEX[word] = VOCAB_SIZE
+            WORD_TO_INDEX[word] = vocab_size
             # Add the embeddings for the word
             try:
-                EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, np.reshape(WORD2VEC_EMBEDDING[word], (1, -1)))
-                print(EMBEDDING_MATRIX.shape)
-                assert False
+                EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, np.reshape(WORD2VEC_EMBEDDING[word], (1, -1)), axis=0)
             except KeyError:
-                EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, EMBEDDING_MATRIX[0])
-            VOCAB_SIZE += 1
+                EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, [EMBEDDING_MATRIX[0]], axis=0)
+            vocab_size += 1
         encoding[word] = WORD_TO_INDEX[word]
     return encoding
 

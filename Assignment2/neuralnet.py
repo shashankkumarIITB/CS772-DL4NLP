@@ -7,8 +7,6 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import Precision, Recall
 from tensorflow.keras.initializers import Constant
 
-from preprocess import EMBEDDING_DIM, EMBEDDING_MATRIX
-
 def softmax_activation(x):
     # write your own implementation from scratch and return softmax values (using predefined softmax is prohibited)
     x_max = tf.math.reduce_max(x, axis=1, keepdims=True)
@@ -18,7 +16,7 @@ def softmax_activation(x):
 
 class NeuralNet:
     # Class for defining the neural network architecture
-    def __init__(self, reviews, ratings, vocab_size, max_input_length=15, max_ratings=5, split_size=0.1, epochs=4, batch_size=32):
+    def __init__(self, reviews, ratings, vocab_size, embedding_dim, embedding_matrix, max_input_length=15, max_ratings=5, split_size=0.1, epochs=4, batch_size=32):
         # Maximum length of input sequences
         self.max_input_length = max_input_length
         # Maximum ratings for a review
@@ -28,6 +26,9 @@ class NeuralNet:
         self.batch_size = batch_size
         # Length of the vocabulary
         self.vocab_size = vocab_size
+        # Embedding matrix
+        self.embedding_dim = embedding_dim
+        self.embedding_matrix = embedding_matrix
         # Split dataset into training and validation sets
         self.reviews_train, self.reviews_validation, self.ratings_train, self.ratings_validation = train_test_split(reviews, ratings, test_size=split_size)
         # Print insights about the data
@@ -35,14 +36,11 @@ class NeuralNet:
 
     def build_nn(self):
         #add the input and output layer here; you can use either tensorflow or pytorch
-        print('Building the model')
-        print(self.vocab_size)
-        print(EMBEDDING_MATRIX.shape)
         model = Sequential()
         model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
-        model.add(Embedding(self.vocab_size, EMBEDDING_DIM, embeddings_initializer=Constant(EMBEDDING_MATRIX), input_length=self.max_input_length, trainable=False, name='embedding'))
+        model.add(Embedding(self.vocab_size, self.embedding_dim, embeddings_initializer=Constant(self.embedding_matrix), trainable=False, name='embedding'))
         model.add(Flatten(name='flatten'))
-        for i, neurons in enumerate([512, 256, 128, 64]):
+        for i, neurons in enumerate([64]):
             model.add(Dense(neurons, activation='relu', name=f'hidden_{i}'))
         model.add(Dense(self.max_ratings, name='dense'))
         model.add(Activation(softmax_activation, name='softmax'))

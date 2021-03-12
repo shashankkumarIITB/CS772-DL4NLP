@@ -21,8 +21,8 @@ def main(train_file, test_file, load_model=False):
         # Preprocess the training reviews
         train_reviews = preprocess_data(train_data)
         # build the model and train it
-        vocab_size = len(WORD_TO_INDEX)
-        nn = NeuralNet(train_reviews, train_ratings, vocab_size, epochs=epochs, batch_size=batch_size)
+        from preprocess import EMBEDDING_MATRIX, EMBEDDING_DIM
+        nn = NeuralNet(train_reviews, train_ratings, len(WORD_TO_INDEX), EMBEDDING_DIM, EMBEDDING_MATRIX, epochs=epochs, batch_size=batch_size)
         nn.build_nn()
         nn.train_nn()
         # predict on test reviews
