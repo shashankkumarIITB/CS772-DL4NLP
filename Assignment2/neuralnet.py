@@ -51,11 +51,14 @@ class NeuralNet:
         self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
         self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=self.batch_size, epochs=self.epochs, verbose=1)
         self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
-        self.model.save('models/Assignment2.h5')
+        # self.model.save('models/Assignment2.h5')
     
     def predict(self, reviews):
         # return a list containing all the ratings predicted by the trained model
         return self.model.predict(reviews)
+
+    def evaluate(self, reviews, ratings):
+        return self.model.evaluate(reviews, ratings, self.batch_size)
 
     def load_nn():
         # function to load the neural network with relu activation used

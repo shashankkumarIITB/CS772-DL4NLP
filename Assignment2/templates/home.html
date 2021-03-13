@@ -5,9 +5,37 @@
 <form method="POST" action="/">
     <textarea name="review" placeholder="Enter review for prediction" rows="5" cols="100"></textarea>
     <br>
+    <h3>Select the hidden layer activation</h3>
+    <input type="radio" name="activation" value="relu" checked>ReLU
+    <br>
+    <input type="radio" name="activation" value="sigmoid">Sigmoid
+    <br>
+    <h3>Select the embeddings</h3>
+    <input type="radio" name="embeddings" value="glove" checked>Glove
+    <br>
+    <input type="radio" name="embeddings" value="word2vec">Word2vec
+    <br>
+    <input type="radio" name="embeddings" value="fasttext">Fasttext
+    <br><br>
     <button type="submit">Predict</button>
 </form>
 
 {% if prediction %}
     <h3>Predicted class: {{ prediction }}</h3>
+    <table>
+        <tr>
+            <th>Ratings</th>
+            <th>Probability</th>
+        </tr>
+        {% for item in predictions %}
+        <tr>
+            <td>
+                {{ item.ratings }}
+            </td>
+            <td>
+                {{ item.probability }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endif %}

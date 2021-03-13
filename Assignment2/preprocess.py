@@ -9,7 +9,7 @@ MAX_INPUT_LENGTH = 15
 # Maximum output ratings
 MAX_RATINGS = 5
 # Dictionary and index for encoding
-UNKNOWN_TOKEN = 'UKN'
+UNKNOWN_TOKEN = 'ukn'
 WORD_TO_INDEX = {UNKNOWN_TOKEN: 0}
 # Embeddings to be used
 EMBEDDING_DIM = 300

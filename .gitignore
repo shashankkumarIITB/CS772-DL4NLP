@@ -131,3 +131,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 Assignment2/embeddings
+Assignment2/models
