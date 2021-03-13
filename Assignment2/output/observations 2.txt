@@ -1,0 +1,19 @@
+model - 256,64 - relu
+train - 128,3 - accuracy - 63,95,98
+test accuracy - 58.44
+
+model - 256,64 - sigmoid
+train - 128,3 - accuracy 46,66,71 - precision 69,75,79 - recall 19,54,63
+test accuracy - 50.76
+
+model - 256,64 - sigmoid
+train - 128,4 - accuracy 47,66,72,80 - precision 67,75,79,85 - recall 20,54,63,74 - validation - 84,87,81
+test accuracy - 53.38
+
+model - 256,64 - sigmoid
+train - 64,4 - accuracy 49,68,81,91 - precision 66,76,85,92 - recall 24,57,75,90 - validation - 93,93,92
+test accuracy - 55.97
+
+model - 256,64 - relu
+train - 64,4 - accuracy 64,96,98,99 - precision 79,96,98,99 - recall 50,95,98,99 - validation - 96,96,96
+test accuracy - 57.83
