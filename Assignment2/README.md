@@ -1,5 +1,5 @@
 # CS772 - DL4NLP
-## Assignment 1 (Sentiment Analysis)
+## Assignment 2 (Sentiment Analysis)
 
 ## Group 24
 
