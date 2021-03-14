@@ -1,4 +1,5 @@
 # Disable tensorflow logs
+import sklearn
 import os,csv
 import numpy as np
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -26,16 +27,13 @@ predictions_softmax = nn.predict(reviews_processed)
 # convert the softmax predictions into class labels
 predictions = predictions_softmax.argmax(axis=1) + 1
 
-# test_file = open("test_predict_sigmoid.txt","w+")
-# for p in predictions:
-#     test_file.write(f'{prediction}\n')
-# test_file.close()
-
 test_size = len(predictions)
 match_count = 0
 
+true_ratings = [r.index(1.0)+1 for r in list(test_ratings)]
+
 for i in range(test_size):
-	if predictions[i] == test_ratings[i]:
+	if predictions[i] == true_ratings[i]:
 		match_count += 1
 
 acc = match_count*100.0/test_size
@@ -48,10 +46,10 @@ print('> test accuracy = %.3f' % (acc))
 
 # print('\n')
 # for i in range(1,6):
-#   print('{} has occurred {} times'.format(i, list(test_ratings).count(i)))
+#   print('{} has occurred {} times'.format(i, list(true_ratings).count(i)))
 
 print('\n')
-y_true = test_ratings
+y_true = true_ratings
 y_pred = predictions
 
 print(sklearn.metrics.classification_report(y_true, y_pred))

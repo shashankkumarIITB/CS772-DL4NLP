@@ -8,7 +8,7 @@ embedding_models = {'word2vec': 'word2vec-google-news-300', 'fasttext': 'fasttex
 
 import gensim.downloader as api
 path = api.load(embedding_models['glove'], return_path=True)
-print(path)
+# print(path) # the path where embedding is saved
 
 # Maxlength of the sequence of input words
 MAX_INPUT_LENGTH = 15
@@ -46,7 +46,7 @@ def get_test_data(test_file):
             test_data.append(row['reviews'])
     return test_data
 
-def get_test_ratings(test_file):
+def get_test_ratings(test_file, max_ratings=MAX_RATINGS):
     # Return test ratings given test file
     test_ratings = []
     with open(test_file) as csvfile:
@@ -54,7 +54,7 @@ def get_test_ratings(test_file):
         for row in reader:
             ratings = int(row['ratings'])
             # Convert output ratings to one-hot encoding 
-            test_ratings.append(ratings)
+            test_ratings.append(list(np.eye(max_ratings)[ratings-1]))
     return test_ratings
 
 def convert_to_lower(text):

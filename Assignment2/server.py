@@ -22,7 +22,7 @@ def home(title='Assignment 2'):
         review = [request.form['review']]
         activation = request.form['activation']
         embeddings = request.form['embeddings']
-        model_name = f'models/{activation}_{embeddings}_balanced.h5'
+        model_name = f'models/final/{activation}_{embeddings}_balanced.h5'
         model = load_model(model_name, custom_objects={'softmax_activation': softmax_activation})
         review_processed = preprocess_data(review)
         prediction_softmax = model.predict(review_processed)
