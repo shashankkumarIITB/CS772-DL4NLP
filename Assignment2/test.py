@@ -35,16 +35,26 @@ test_size = len(predictions)
 match_count = 0
 
 for i in range(test_size):
-	p = predictions[i]
-	t = test_ratings[i]
-
-	if t[p-1]==1.0:
+	if predictions[i] == test_ratings[i]:
 		match_count += 1
 
 acc = match_count*100.0/test_size
 
 print('> test accuracy = %.3f' % (acc))
 
-# print the results
-# for review, prediction in zip(reviews, predictions):
-#     print(f'{review} => {prediction}')
+# print('\n')
+# for i in range(1,6):
+#   print('{} has been predicted {} times'.format(i, list(predictions).count(i)))
+
+# print('\n')
+# for i in range(1,6):
+#   print('{} has occurred {} times'.format(i, list(test_ratings).count(i)))
+
+print('\n')
+y_true = test_ratings
+y_pred = predictions
+
+print(sklearn.metrics.classification_report(y_true, y_pred))
+print('\n')
+
+print(sklearn.metrics.confusion_matrix(y_true, y_pred))
