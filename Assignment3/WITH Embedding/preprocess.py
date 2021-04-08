@@ -4,10 +4,10 @@ from nltk.corpus import stopwords
 import gensim
 import numpy as np
 
-embedding_models = {'word2vec': 'word2vec-google-news-300', 'fasttext': 'fasttext-wiki-news-subwords-300', 'glove': 'glove-wiki-gigaword-300'}
+# embedding_models = {'word2vec': 'word2vec-google-news-300', 'fasttext': 'fasttext-wiki-news-subwords-300', 'glove': ''}
 
 import gensim.downloader as api
-path = api.load(embedding_models['glove'], return_path=True)
+path = api.load('glove-wiki-gigaword-300', return_path=True)
 # print(path) # the path where embedding is saved
 
 # Maxlength of the sequence of input words

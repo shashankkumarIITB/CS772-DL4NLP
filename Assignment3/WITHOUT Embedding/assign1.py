@@ -223,21 +223,20 @@ def main(train_file, test_file):
 
 def test_model(test_file):
 	test_data = get_test_data(test_file)
-    test_ratings = get_test_ratings(test_file)
+	test_ratings = get_test_ratings(test_file)
 
-    nn = NeuralNet.load_nn()
-    reviews_processed = preprocess_data(test_data)
-    predictions_softmax = nn.predict(reviews_processed)
-    predictions = predictions_softmax.argmax(axis=1) + 1
+	nn = NeuralNet.load_nn()
+	reviews_processed = preprocess_data(test_data)
+	predictions_softmax = nn.predict(reviews_processed)
+	predictions = predictions_softmax.argmax(axis=1) + 1
 
-    test_size = len(predictions)
-    match_count = 0
+	test_size = len(predictions)
+	match_count = 0
+	true_ratings = [r.index(1.0)+1 for r in list(test_ratings)]
 
-    true_ratings = [r.index(1.0)+1 for r in list(test_ratings)]
-
-    for i in range(test_size):
-    	if predictions[i] == true_ratings[i]:
-    		match_count += 1
+	for i in range(test_size):
+		if predictions[i] == true_ratings[i]:
+			match_count += 1
 
 	acc = match_count*100.0/test_size
 	print('> test accuracy = %.3f' % (acc), '\n')

@@ -37,8 +37,8 @@ class NeuralNet:
     def build_nn(self, bi, ci, di):
         #add the input and output layer here; you can use either tensorflow or pytorch
         model = Sequential()
-        model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
-        model.add(Embedding(self.vocab_size, self.embedding_dim, embeddings_initializer=Constant(self.embedding_matrix), trainable=False, name='embedding'))
+        model.add(InputLayer(input_shape=(MAX_INPUT_LENGTH, ), name='input'))
+        model.add(Embedding(len(ENCODED_DICT), 300, name='embedding'))
         #model layers
         if bi==0:
         	model.add(LSTM(256, activation='sigmoid', name=f'LSTM_1', return_sequences=True))
