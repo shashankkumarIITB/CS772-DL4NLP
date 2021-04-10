@@ -16,7 +16,8 @@ from preprocess import preprocess_data, get_test_data, get_test_ratings
 # ]
 
 test_data = get_test_data('data/gold_test.csv')
-test_ratings = get_test_ratings('data/gold_test.csv')
+true_ratings = get_test_ratings('data/gold_test.csv')
+test_ratings = [r.index(1.0)+1 for r in list(true_ratings)]
 
 # for b,c,d in l:
 # 	print("bi = {}, ci = {}, di = {}".format(b,c,d))

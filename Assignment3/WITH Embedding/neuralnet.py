@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Flatten, Dense, Activation, Embedding, InputLayer
+from tensorflow.keras.layers import SimpleRNN, LSTM, GRU, Dropout, Bidirectional
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import Precision, Recall
 from tensorflow.keras.initializers import Constant
@@ -16,6 +17,7 @@ def softmax_activation(x):
 
 class NeuralNet:
     # Class for defining the neural network architecture
+
     def __init__(self, reviews, ratings, vocab_size, embedding_dim, embedding_matrix, max_input_length=15, max_ratings=5, split_size=0.1, epochs=4, batch_size=32):
         # Maximum length of input sequences
         self.max_input_length = max_input_length
@@ -33,6 +35,13 @@ class NeuralNet:
         self.reviews_train, self.reviews_validation, self.ratings_train, self.ratings_validation = train_test_split(reviews, ratings, test_size=split_size)
         # Print insights about the data
         self.print_insights(ratings)
+
+    def print_insights(self, ratings):
+        # Print information about the training data available
+        ratings = [np.where(r==1)[0][0] for r in np.array(ratings)]
+        ratings, count = np.unique(ratings, return_counts=True)
+        for r, c in zip(ratings, count):
+            print(f'Ratings: {r+1} => {c}') 
 
     def build_nn(self, bi, ci, di):
         #add the input and output layer here; you can use either tensorflow or pytorch
@@ -77,29 +86,15 @@ class NeuralNet:
         self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
         self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=self.batch_size, epochs=self.epochs, verbose=1, validation_data=(self.reviews_validation, self.ratings_validation))
         self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
-        self.model.save('models/{bi}-{ci}-{di}.h5')
+        self.model.save(f'models/{bi}-{ci}-{di}.h5')
     
-    def predict(self, reviews):
-        # return a list containing all the ratings predicted by the trained model
-        return self.model.predict(reviews)
-
     def evaluate(self, reviews, ratings):
         return self.model.evaluate(reviews, ratings, self.batch_size)
 
     def load_nn(bi, ci, di):
         # function to load the neural network with relu activation used
-        return load_model('models/{bi}-{ci}-{di}.h5', custom_objects={'softmax_activation': softmax_activation})
+        return load_model(f'models/{bi}-{ci}-{di}.h5', custom_objects={'softmax_activation': softmax_activation})
 
-    def print_insights(self, ratings):
-        # Print information about the training data available
-        ratings = [np.where(r==1)[0][0] for r in np.array(ratings)]
-        ratings, count = np.unique(ratings, return_counts=True)
-        for r, c in zip(ratings, count):
-            print(f'Ratings: {r+1} => {c}') 
-
-    def write_file(self, filename='output/validation_output.txt'):
-        # Function to write predicted values on the validation set to file
-        predictions = self.predict(self.reviews_validation)
-        with open(filename, 'w') as file:
-            for prediction, actual in zip(predictions, self.ratings_validation):
-                file.write(f'{prediction.argmax() + 1}, {actual.argmax() + 1}\n')
+    def predict(self, reviews):
+        # return a list containing all the ratings predicted by the trained model
+        return self.model.predict(reviews)
