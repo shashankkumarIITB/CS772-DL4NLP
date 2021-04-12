@@ -11,7 +11,7 @@ The submission consists of 1 pdf file (presentation), 2 folders and 1 readme fil
 | WITH Embedding | Contains the code with pre-trained (glove) embedding |
 | WITHOUT Embedding | Contains the code with no pre-trained embedding |
 
-Every folder contains 5 python files and 3 subfolders
+Every folder contains at least 5 python files and 3 subfolders
 
 ### Python files
 | File name | Description |
@@ -41,7 +41,7 @@ python3 preprocess.py
 
 In pre-trained embedding case, this will also download and save the embedding for further use.
 
-Next select the model to be trained in train.&#8203;py file. Value guide for different models is given below -
+Next select the model to be trained in train.&#8203;py file. Value guide for different models (according to neuralnet.&#8203;py) is given below -
 
 | bi value | Model |
 | ------ | ------ |
