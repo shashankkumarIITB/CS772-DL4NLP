@@ -29,6 +29,9 @@ Every folder contains 5 python files and 3 subfolders
 | models | Contains the model (after training) |
 | templates | contains the html file for GUI testing |
 
+## IMPORTANT
+Please read the file NOTE.txt in WITH EMBEDDING folder.
+
 ## Execution
 Run preprocess.&#8203;py.
 
@@ -75,6 +78,7 @@ python3 test.py
 > Note: Download the trained models from https://drive.google.com/drive/folders/14yLseyRRrqKfOwxOpVFQjqJSK9kK6s6F?usp=sharing and save them to respective models folder for this testing.
 
 Then, run the following commands in the terminal.
+
 ```sh
 export FLASK_APP=server.py
 flask run

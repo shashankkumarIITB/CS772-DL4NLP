@@ -28,6 +28,7 @@ def main(train_file, test_file, load_model=False):
         # Preprocess the training reviews
         train_reviews = preprocess_data(train_data)
         # build the model and train it
+        
         # for b,c,d in l:
         #     print("bi = {}, ci = {}, di = {}".format(b,c,d))
 
@@ -37,6 +38,7 @@ def main(train_file, test_file, load_model=False):
 
         #     for i in range(2):
         #         print('\n')
+        
         nn = NeuralNet(train_reviews, train_ratings, len(WORD_TO_INDEX), EMBEDDING_DIM, EMBEDDING_MATRIX, epochs=epochs, batch_size=batch_size)
         b,c,d = 0,5,0
         nn.build_nn(b,c,d)

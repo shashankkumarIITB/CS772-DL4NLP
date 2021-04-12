@@ -19,6 +19,9 @@ test_data = get_test_data('data/gold_test.csv')
 true_ratings = get_test_ratings('data/gold_test.csv')
 test_ratings = [r.index(1.0)+1 for r in list(true_ratings)]
 
+l = [[0,5,0], [0,5,1], [1,5,0], [1,5,1], [2,5,0], [2,5,1], [3,5,0], [3,5,1], [4,5,0], [4,5,1], 
+     [0,0,0], [0,0,1], [1,1,0], [1,1,1], [2,2,0], [2,2,1], [3,3,0], [3,3,1], [4,4,0], [4,4,1]] # bi,ci,di
+
 # for b,c,d in l:
 # 	print("bi = {}, ci = {}, di = {}".format(b,c,d))
 
