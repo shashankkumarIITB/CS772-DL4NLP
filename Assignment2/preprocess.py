@@ -4,6 +4,12 @@ from nltk.corpus import stopwords
 import gensim
 import numpy as np
 
+embedding_models = {'word2vec': 'word2vec-google-news-300', 'fasttext': 'fasttext-wiki-news-subwords-300', 'glove': 'glove-wiki-gigaword-300'}
+
+import gensim.downloader as api
+path = api.load(embedding_models['glove'], return_path=True)
+# print(path) # the path where embedding is saved
+
 # Maxlength of the sequence of input words
 MAX_INPUT_LENGTH = 15
 # Maximum output ratings
@@ -14,7 +20,7 @@ WORD_TO_INDEX = {UNKNOWN_TOKEN: 0}
 # Embeddings to be used
 EMBEDDING_DIM = 300
 EMBEDDING_MATRIX = np.array([np.zeros((EMBEDDING_DIM,))])
-WORD2VEC_EMBEDDING = gensim.models.KeyedVectors.load_word2vec_format('embeddings/GoogleNews-vectors-negative300.bin', binary=True)
+MODEL_EMBEDDING = gensim.models.KeyedVectors.load_word2vec_format(path)
 # Stopwords = Words that do not add meaning to the sentence
 STOPWORDS = stopwords.words("english")
 
@@ -40,7 +46,7 @@ def get_test_data(test_file):
             test_data.append(row['reviews'])
     return test_data
 
-def get_test_ratings(test_file):
+def get_test_ratings(test_file, max_ratings=MAX_RATINGS):
     # Return test ratings given test file
     test_ratings = []
     with open(test_file) as csvfile:
@@ -48,7 +54,7 @@ def get_test_ratings(test_file):
         for row in reader:
             ratings = int(row['ratings'])
             # Convert output ratings to one-hot encoding 
-            test_ratings.append(list(np.eye(5)[ratings-1]))
+            test_ratings.append(list(np.eye(max_ratings)[ratings-1]))
     return test_ratings
 
 def convert_to_lower(text):
@@ -82,7 +88,7 @@ def encode_data(text):
             WORD_TO_INDEX[word] = vocab_size
             # Add the embeddings for the word
             try:
-                EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, np.reshape(WORD2VEC_EMBEDDING[word], (1, -1)), axis=0)
+                EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, np.reshape(MODEL_EMBEDDING[word], (1, -1)), axis=0)
             except KeyError:
                 EMBEDDING_MATRIX = np.append(EMBEDDING_MATRIX, [EMBEDDING_MATRIX[0]], axis=0)
             vocab_size += 1

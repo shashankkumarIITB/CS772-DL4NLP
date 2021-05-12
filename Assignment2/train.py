@@ -36,7 +36,7 @@ def main(train_file, test_file, load_model=False):
 
 # Main function to run code from command line
 if __name__ == '__main__':
-    predictions_softmax = main('data/train.csv', 'data/gold_test.csv', load_model=False)
+    predictions_softmax = main('data/train_balanced.csv', 'data/gold_test.csv', load_model=False)
     predictions = predictions_softmax.argmax(axis=1) + 1
 
     # Write the predictions to a file

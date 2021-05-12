@@ -1,0 +1,5 @@
+We did the entire assignment in colab and it worked fine. But for some reason, the code for this part (WITH EMBEDDING) doesn't work on our machines. 
+
+Therefore, below is the link of colab notebook of this part (accesible through IITB Google account). You can verify that code in the notebook is same as this one (with some minor changes like removing some local and library imports). Before running the notebook, you need the test and train files (given in data folder) in main directory of the notebook.
+
+https://colab.research.google.com/drive/1t_UM0C8vS4nQt0UmAZz23bnRQ1TKeC-R?usp=sharing

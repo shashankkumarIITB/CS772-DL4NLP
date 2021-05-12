@@ -40,8 +40,8 @@ class NeuralNet:
         model.add(InputLayer(input_shape=(self.max_input_length, ), name='input'))
         model.add(Embedding(self.vocab_size, self.embedding_dim, embeddings_initializer=Constant(self.embedding_matrix), trainable=False, name='embedding'))
         model.add(Flatten(name='flatten'))
-        for i, neurons in enumerate([256,64]):
-            model.add(Dense(neurons, activation='sigmoid', name=f'hidden_{i}'))
+        for i, neurons in enumerate([256]):
+            model.add(Dense(neurons, activation='sigmoid', name=f'hidden_{i+1}'))
         model.add(Dense(self.max_ratings, name='dense'))
         model.add(Activation(softmax_activation, name='softmax'))
         self.model = model
@@ -51,7 +51,7 @@ class NeuralNet:
         self.model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy', Precision(), Recall()])
         self.model.fit(x=self.reviews_train, y=self.ratings_train, batch_size=self.batch_size, epochs=self.epochs, verbose=1)
         self.model.evaluate(x=self.reviews_validation, y=self.ratings_validation)
-        # self.model.save('models/Assignment2.h5')
+        self.model.save('models/Assignment2.h5')
     
     def predict(self, reviews):
         # return a list containing all the ratings predicted by the trained model
@@ -63,14 +63,6 @@ class NeuralNet:
     def load_nn():
         # function to load the neural network with relu activation used
         return load_model('models/Assignment2.h5', custom_objects={'softmax_activation': softmax_activation})
-
-    def load_nn_relu():
-        # function to load the neural network with relu activation used
-        return load_model('models/Assignment2_relu.h5', custom_objects={'softmax_activation': softmax_activation})
-
-    def load_nn_sigmoid():
-        # function to load the neural network with sigmoid activation used
-        return load_model('models/Assignment2_sigmoid.h5', custom_objects={'softmax_activation': softmax_activation})
 
     def print_insights(self, ratings):
         # Print information about the training data available
