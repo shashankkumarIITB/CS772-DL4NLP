@@ -1,0 +1,29 @@
+<!doctype html>
+<title>{{ title }}</title>
+<h1>{{ title }}</h1>
+
+<form method="POST" action="/">
+    <textarea name="review" placeholder="Enter review for prediction" rows="5" cols="100"></textarea>
+    <br>
+    <button type="submit">Predict</button>
+</form>
+
+{% if prediction %}
+    <h3>Predicted class: {{ prediction }}</h3>
+    <table>
+        <tr>
+            <th>Ratings</th>
+            <th>Probability</th>
+        </tr>
+        {% for item in predictions %}
+        <tr>
+            <td>
+                {{ item.ratings }}
+            </td>
+            <td>
+                {{ item.probability }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}

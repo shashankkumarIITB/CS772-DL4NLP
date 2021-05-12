@@ -1,0 +1,25 @@
+<!doctype html>
+<title>{{ title }}</title>
+<h1>{{ title }}</h1>
+
+<form method="POST" action="/" enctype="multipart/form-data">
+    <input type="radio" name="image_present" value="true">Text translation with ocr
+    <br>
+    <input type="radio" name="image_present" value="false" checked>Only text translation
+    <br>
+    <br>
+
+    <textarea name="text_to_translate" rows="5" cols="100" placeholder="Enter text here"></textarea>
+    <br>
+    <br>
+    <input type="file" name="ocr_image">
+    <br>
+    
+    <h3>Translation Architecture</h3>
+    <input type="radio" name="architecture" value="attention" checked>Encoder Decoder with Attention
+    <br>
+    <input type="radio" name="architecture" value="encoder">Encoder Decoder
+    <br>
+    <br>
+    <button type="submit">Predict</button>
+</form>

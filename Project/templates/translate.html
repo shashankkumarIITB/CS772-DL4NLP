@@ -1,0 +1,26 @@
+<!doctype html>
+<title>{{ title }}</title>
+<h1>{{ title }}</h1>
+
+<a href="/">Back to home</a>
+
+{% if image_present %}
+<h3>Uploaded image</h3>
+<img src="{{ image_path }}" height="250px" width="500px">
+<br>
+{% endif %}
+
+<h3>Extracted text</h3>
+<p>{{ text_extracted }}</p>
+<br>
+
+<h3>Translated text</h3>
+<p>{{ text_translated }}</p>
+<br>
+
+<h3>Expected translation</h3>
+<p>{{ expected_translation }}</p>
+<br>
+
+<h3>Text-to-Speech</h3>
+<audio controls><source src="{{ audio_path }}"></audio>
